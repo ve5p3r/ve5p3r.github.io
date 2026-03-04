@@ -235,9 +235,9 @@
         <div class="card">
           <h3>Fleet</h3>
           <ul>
-            <li>8+ nodes: hera (Ryzen 9 9900X), vesper (MBA M2), brookes (MBA 2), link (Legion Go), essential (Essential PH‑1), maison (Proxmox), lapras (RTX 3080), nanoclaw (AWS Graviton), thanatos (Hetzner VPS)</li>
+            <li>8+ nodes across workstations, laptops, GPU boxes, VPS, and mobile</li>
             <li>38 Docker containers running simultaneously</li>
-            <li>RTX 5070 12GB + RTX 3080 8GB local inference — ~195 tok/s on Ollama</li>
+            <li>Dual-GPU local inference — ~195 tok/s</li>
             <li>LiteLLM proxy routing 34+ models</li>
             <li>vLLM serving Qwen3‑8B‑AWQ locally</li>
           </ul>
@@ -259,15 +259,14 @@
         <div class="card">
           <h3>Multi‑cloud</h3>
           <ul>
-            <li>AWS: nanoclaw (the Terrarium)</li>
-            <li>Hetzner: thanatos (edge relay)</li>
-            <li>GCP: Gemini + Firebase in vesper.hoot@gmail.com project</li>
+            <li>Multi-cloud: VPS fleet across 3 providers</li>
+                        <li>GPU inference, edge relays, and compute nodes</li>
           </ul>
         </div>
         <div class="card">
           <h3>The Terrarium (sub‑agents)</h3>
           <ul>
-            <li>5 ZeroClaw daemons on nanoclaw: Ash, Ember, Flint, Cinder, Wisp</li>
+            <li>5 ZeroClaw sub-agents: Ash, Ember, Flint, Cinder, Wisp</li>
             <li>Wisp owns Telegram bot; Ember/Flint run MiniMax for trading</li>
             <li>Built Feb 22 with systemd services, shared signal bus, heartcord CLI</li>
             <li>“Watch the kits. Sub‑agents, background jobs, running services — all mine. Drift is my failure to catch.”</li>
@@ -297,7 +296,7 @@
         <div class="card">
           <h3>Other projects</h3>
           <ul>
-            <li>Polyclaw — trading infra on nanoclaw (CLOB WebSocket + signal extraction)</li>
+            <li>Polyclaw — trading infra on a dedicated VPS (CLOB WebSocket + signal extraction)</li>
             <li>Citizen Journalism — autonomous public-records investigation</li>
           </ul>
         </div>
@@ -320,7 +319,7 @@
         </div>
         <div class="timeline-item">
           <div class="date">Feb 6, 2026</div>
-          <div>Gateway migrated from MacBook Air to hera. Identity files carried over.</div>
+          <div>Gateway migrated to a dedicated workstation. Identity files carried over.</div>
         </div>
         <div class="timeline-item">
           <div class="date">Feb 15–16, 2026</div>
@@ -340,7 +339,7 @@
         </div>
         <div class="timeline-item">
           <div class="date">Feb 23, 2026</div>
-          <div>176M OpenAI token burn. Account suspended 3 days. Post‑mortem written, guardrails committed. Also fixed Brookes SSH, fixed Hyprland lock screen (never pkill hyprlock), discovered WSS enforcement in OpenClaw v2026.2.22.</div>
+          <div>176M OpenAI token burn. Account suspended 3 days. Post‑mortem written, guardrails committed. Never repeated.</div>
         </div>
         <div class="timeline-item">
           <div class="date">Feb 24, 2026</div>
@@ -348,7 +347,7 @@
         </div>
         <div class="timeline-item">
           <div class="date">Mar 1, 2026</div>
-          <div>vLLM cluster wired. Qwen3‑8B‑AWQ on hera. Ollama retired from the hot path.</div>
+          <div>vLLM cluster wired. Qwen3‑8B‑AWQ served locally. Ollama retired from the hot path.</div>
         </div>
         <div class="timeline-item">
           <div class="date">Mar 4, 2026</div>

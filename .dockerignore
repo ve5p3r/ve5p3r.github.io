@@ -1,0 +1,13 @@
+.git
+.github
+.env*
+node_modules
+dist
+coverage
+*.log
+Dockerfile*
+README.md
+index.html
+fox.webp
+CNAME
+-l

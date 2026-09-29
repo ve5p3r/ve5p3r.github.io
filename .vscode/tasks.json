@@ -1,0 +1,132 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dependencies: Install (locked)",
+      "type": "process",
+      "command": "bun",
+      "args": ["install", "--frozen-lockfile", "--ignore-scripts"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Start development server",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Check: TypeScript",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "typecheck"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$tsc",
+      "group": "build"
+    },
+    {
+      "label": "Check: Oxlint",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "lint"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Check: Prettier",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "format:check"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Check: Local pipeline",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "check:local"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build: Production bundle",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "build"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Preview production bundle",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "start"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Sandbox: Prepare this project",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "sandbox:prepare"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Sandbox: Preflight this project",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "sandbox:preflight"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Sandbox: Launch Codex",
+      "type": "process",
+      "command": "bun",
+      "args": ["run", "sandbox:agent"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

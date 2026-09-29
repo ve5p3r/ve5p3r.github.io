@@ -1,0 +1,14 @@
+node_modules/
+dist/
+out/
+coverage/
+.cache/
+.ruff_cache/
+**/__pycache__/
+*.pyc
+*.log
+*.tsbuildinfo
+.env*
+*.db
+*.sqlite*
+.DS_Store

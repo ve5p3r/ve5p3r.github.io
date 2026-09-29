@@ -53,7 +53,7 @@ jobs:
           set -euo pipefail
           base="http://127.0.0.1:$SMOKE_PORT"
           for attempt in {1..30}; do
-            if curl --fail --silent --show-error "$base/healthz" >/dev/null; then
+            if curl --retry 5 --retry-delay 1 --retry-all-errors --fail --silent --show-error "$base/healthz" >/dev/null; then
               break
             fi
             if [ "$attempt" -eq 30 ]; then
@@ -62,9 +62,9 @@ jobs:
             fi
             sleep 1
           done
-          curl --fail --silent --show-error "$base/" | grep -qi '<html'
+          curl --retry 5 --retry-delay 1 --retry-all-errors --fail --silent --show-error "$base/" | grep -qi '<html'
           for path in '/.env' '/package.json' '/README.md' '/src/server.ts' '/src/server.tsx'; do
-            status="$(curl --silent --output /dev/null --write-out '%{http_code}' "$base$path")"
+            status="$(curl --retry 5 --retry-delay 1 --retry-all-errors --silent --output /dev/null --write-out '%{http_code}' "$base$path")"
             test "$status" = 404
           done
 
@@ -93,6 +93,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e
+
       - name: Build and publish immutable image
         id: image
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
@@ -120,13 +123,13 @@ jobs:
           port="$(docker inspect --format '{{(index (index .NetworkSettings.Ports "5173/tcp") 0).HostPort}}' published-site-smoke)"
           base="http://127.0.0.1:$port"
           for attempt in {1..30}; do
-            if curl --fail --silent --show-error "$base/healthz" >/dev/null; then break; fi
+            if curl --retry 5 --retry-delay 1 --retry-all-errors --fail --silent --show-error "$base/healthz" >/dev/null; then break; fi
             if [ "$attempt" -eq 30 ]; then docker logs published-site-smoke; exit 1; fi
             sleep 1
           done
-          curl --fail --silent --show-error "$base/" | grep -qi '<html'
+          curl --retry 5 --retry-delay 1 --retry-all-errors --fail --silent --show-error "$base/" | grep -qi '<html'
           for path in '/.env' '/package.json' '/README.md' '/src/server.ts' '/src/server.tsx'; do
-            test "$(curl --silent --output /dev/null --write-out '%{http_code}' "$base$path")" = 404
+            test "$(curl --retry 5 --retry-delay 1 --retry-all-errors --silent --output /dev/null --write-out '%{http_code}' "$base$path")" = 404
           done
 
       - name: Stop published-image smoke test

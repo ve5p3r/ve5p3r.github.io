@@ -82,6 +82,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - name: Check out the verified commit
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -172,3 +174,55 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  deploy-azure:
+    name: Deploy published digest to Azure App Service
+    # Failover host for the same image hera runs. Uses OIDC (no stored Azure password):
+    # a user-assigned managed identity whose federated credential trusts only
+    # repo:<this repo>:environment:github-pages, with Website Contributor on this one web app.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: github-pages
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: azure-deploy-ve5p3r-dev-site
+      cancel-in-progress: false
+    env:
+      AZURE_WEBAPP: ve5p3r-dev-site
+      AZURE_RESOURCE_GROUP: rg-sites
+      IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+    steps:
+      - name: Log in to Azure with OIDC
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Point the web app at the immutable digest
+        run: |
+          set -euo pipefail
+          test -n "$IMAGE_DIGEST"
+          az webapp config container set \
+            --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" \
+            --container-image-name "$IMAGE_NAME@$IMAGE_DIGEST" --output none
+
+      - name: Wait for the new container to report healthy
+        run: |
+          set -euo pipefail
+          host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query defaultHostName --output tsv)"
+          configured="$(az webapp config show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query linuxFxVersion --output tsv)"
+          echo "Configured: $configured"
+          case "$configured" in *"$IMAGE_DIGEST"*) ;; *) echo "digest not applied"; exit 1;; esac
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent --show-error --max-time 20 "https://$host/healthz" >/dev/null && \
+               curl --fail --silent --show-error --max-time 20 "https://$host/" | grep -qi '<html'; then
+              echo "Healthy on https://$host"; exit 0
+            fi
+            sleep 15
+          done
+          echo "Azure app did not become healthy"; exit 1

@@ -207,20 +207,59 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$IMAGE_DIGEST"
-          az webapp config container set \
-            --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" \
-            --container-image-name "$IMAGE_NAME@$IMAGE_DIGEST" --output none
+          current="$(az webapp config show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query linuxFxVersion --output tsv)"
+          echo "DEPLOY_STARTED=$(date --utc +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          case "$current" in
+            *"$IMAGE_DIGEST"*) echo "Digest already configured; verifying health only."; echo "NEEDS_RECYCLE=false" >> "$GITHUB_ENV" ;;
+            *) az webapp config container set \
+                 --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" \
+                 --container-image-name "$IMAGE_NAME@$IMAGE_DIGEST" --output none
+               echo "NEEDS_RECYCLE=true" >> "$GITHUB_ENV" ;;
+          esac
 
-      - name: Wait for the new container to report healthy
+      - name: Wait until the new digest's container has started
+        if: env.NEEDS_RECYCLE == 'true'
+        run: |
+          set -euo pipefail
+          # App Service keeps serving the old container while the new one pulls and warms up,
+          # so health checks alone could pass against the old image. Wait for the platform log
+          # to show this digest being pulled and the site starting after this deploy began.
+          scm="https://$AZURE_WEBAPP.scm.azurewebsites.net"
+          for attempt in $(seq 1 40); do
+            token="$(az account get-access-token --resource https://management.azure.com/ --query accessToken --output tsv)"
+            curl --fail --silent --show-error --max-time 60 -H "Authorization: Bearer $token" "$scm/api/logs/docker" --output "$RUNNER_TEMP/logs.json" || { sleep 15; continue; }
+            : > "$RUNNER_TEMP/docker.log"
+            for href in $(jq -r --arg since "$DEPLOY_STARTED" '.[] | select(.lastUpdated >= $since) | .href' "$RUNNER_TEMP/logs.json"); do
+              curl --fail --silent --show-error --max-time 60 -H "Authorization: Bearer $token" "$href" >> "$RUNNER_TEMP/docker.log" || true
+            done
+            if python3 - "$RUNNER_TEMP/docker.log" "$DEPLOY_STARTED" "$IMAGE_DIGEST" <<'PY'
+          import sys
+          log, since, digest = sys.argv[1], sys.argv[2], sys.argv[3]
+          pulled = False
+          for line in open(log, errors="replace"):
+              ts = line[:19] + "Z"
+              if ts < since:
+                  continue
+              if "Pulling image" in line and digest in line:
+                  pulled = True
+              elif pulled and "State: Started" in line:
+                  sys.exit(0)
+          sys.exit(1)
+          PY
+            then echo "New container started (attempt $attempt)"; exit 0; fi
+            sleep 15
+          done
+          echo "New container did not report started; the previous container keeps serving."
+          exit 1
+
+      - name: Check the site is healthy on the new container
         run: |
           set -euo pipefail
           host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query defaultHostName --output tsv)"
-          configured="$(az webapp config show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query linuxFxVersion --output tsv)"
-          echo "Configured: $configured"
-          case "$configured" in *"$IMAGE_DIGEST"*) ;; *) echo "digest not applied"; exit 1;; esac
-          for attempt in $(seq 1 40); do
+          for attempt in $(seq 1 20); do
             if curl --fail --silent --show-error --max-time 20 "https://$host/healthz" >/dev/null && \
-               curl --fail --silent --show-error --max-time 20 "https://$host/" | grep -qi '<html'; then
+               curl --fail --silent --show-error --max-time 20 --output "$RUNNER_TEMP/azure-home.html" "https://$host/" && \
+               grep -qi '<html' "$RUNNER_TEMP/azure-home.html"; then
               echo "Healthy on https://$host"; exit 0
             fi
             sleep 15

@@ -82,6 +82,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - name: Check out the verified commit
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -172,3 +174,94 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  deploy-azure:
+    name: Deploy published digest to Azure App Service
+    # Failover host for the same image hera runs. Uses OIDC (no stored Azure password):
+    # a user-assigned managed identity whose federated credential trusts only
+    # repo:<this repo>:environment:github-pages, with Website Contributor on this one web app.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: github-pages
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: azure-deploy-ve5p3r-dev-site
+      cancel-in-progress: false
+    env:
+      AZURE_WEBAPP: ve5p3r-dev-site
+      AZURE_RESOURCE_GROUP: rg-sites
+      IMAGE_DIGEST: ${{ needs.publish.outputs.digest }}
+    steps:
+      - name: Log in to Azure with OIDC
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Point the web app at the immutable digest
+        run: |
+          set -euo pipefail
+          test -n "$IMAGE_DIGEST"
+          current="$(az webapp config show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query linuxFxVersion --output tsv)"
+          echo "DEPLOY_STARTED=$(date --utc +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          case "$current" in
+            *"$IMAGE_DIGEST"*) echo "Digest already configured; verifying health only."; echo "NEEDS_RECYCLE=false" >> "$GITHUB_ENV" ;;
+            *) az webapp config container set \
+                 --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" \
+                 --container-image-name "$IMAGE_NAME@$IMAGE_DIGEST" --output none
+               echo "NEEDS_RECYCLE=true" >> "$GITHUB_ENV" ;;
+          esac
+
+      - name: Wait until the new digest's container has started
+        if: env.NEEDS_RECYCLE == 'true'
+        run: |
+          set -euo pipefail
+          # App Service keeps serving the old container while the new one pulls and warms up,
+          # so health checks alone could pass against the old image. Wait for the platform log
+          # to show this digest being pulled and the site starting after this deploy began.
+          scm="https://$AZURE_WEBAPP.scm.azurewebsites.net"
+          for attempt in $(seq 1 40); do
+            token="$(az account get-access-token --resource https://management.azure.com/ --query accessToken --output tsv)"
+            curl --fail --silent --show-error --max-time 60 -H "Authorization: Bearer $token" "$scm/api/logs/docker" --output "$RUNNER_TEMP/logs.json" || { sleep 15; continue; }
+            : > "$RUNNER_TEMP/docker.log"
+            for href in $(jq -r --arg since "$DEPLOY_STARTED" '.[] | select(.lastUpdated >= $since) | .href' "$RUNNER_TEMP/logs.json"); do
+              curl --fail --silent --show-error --max-time 60 -H "Authorization: Bearer $token" "$href" >> "$RUNNER_TEMP/docker.log" || true
+            done
+            if python3 - "$RUNNER_TEMP/docker.log" "$DEPLOY_STARTED" "$IMAGE_DIGEST" <<'PY'
+          import sys
+          log, since, digest = sys.argv[1], sys.argv[2], sys.argv[3]
+          pulled = False
+          for line in open(log, errors="replace"):
+              ts = line[:19] + "Z"
+              if ts < since:
+                  continue
+              if "Pulling image" in line and digest in line:
+                  pulled = True
+              elif pulled and "State: Started" in line:
+                  sys.exit(0)
+          sys.exit(1)
+          PY
+            then echo "New container started (attempt $attempt)"; exit 0; fi
+            sleep 15
+          done
+          echo "New container did not report started; the previous container keeps serving."
+          exit 1
+
+      - name: Check the site is healthy on the new container
+        run: |
+          set -euo pipefail
+          host="$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$AZURE_WEBAPP" --query defaultHostName --output tsv)"
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error --max-time 20 "https://$host/healthz" >/dev/null && \
+               curl --fail --silent --show-error --max-time 20 --output "$RUNNER_TEMP/azure-home.html" "https://$host/" && \
+               grep -qi '<html' "$RUNNER_TEMP/azure-home.html"; then
+              echo "Healthy on https://$host"; exit 0
+            fi
+            sleep 15
+          done
+          echo "Azure app did not become healthy"; exit 1

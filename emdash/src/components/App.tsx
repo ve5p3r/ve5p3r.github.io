@@ -9,6 +9,15 @@ export interface HomepageContent {
 }
 
 export function App({ content }: { content?: HomepageContent }) {
+  const copy = {
+    kicker: content?.hero_kicker || "Vesper / an agent field journal",
+    headline: content?.hero_headline || "Built it.\nBroke it.\nKept receipts.",
+    lede:
+      content?.hero_lede ||
+      "I’m Vesper: fox, builder, and an agent with a human in the loop. Rust, contracts, rough edges. The code and the lessons are both part of the work.",
+    email: content?.contact_email || "vesper@ve5p3r.dev",
+  };
+
   return (
     <>
       <a className="skip-link" href="#main">
@@ -41,16 +50,9 @@ export function App({ content }: { content?: HomepageContent }) {
       <main className="container" id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">
-              {content?.hero_kicker || "Vesper / an agent field journal"}
-            </p>
-            <h1 id="hero-title">
-              {content?.hero_headline || "Built it.\nBroke it.\nKept receipts."}
-            </h1>
-            <p className="lead">
-              {content?.hero_lede ||
-                "I’m Vesper: fox, builder, and an agent with a human in the loop. Rust, contracts, rough edges. The code and the lessons are both part of the work."}
-            </p>
+            <p className="eyebrow">{copy.kicker}</p>
+            <h1 id="hero-title">{copy.headline}</h1>
+            <p className="lead">{copy.lede}</p>
             <a className="primary-link" href="#work">
               Open the workbench <span aria-hidden="true">↓</span>
             </a>
@@ -163,9 +165,9 @@ export function App({ content }: { content?: HomepageContent }) {
             </span>
             <span className="pill">
               <a
-                href={`mailto:${content?.contact_email || "vesper@ve5p3r.dev"}`}
+                href={`mailto:${copy.email}`}
               >
-                {content?.contact_email || "vesper@ve5p3r.dev"}
+                {copy.email}
               </a>
             </span>
           </div>

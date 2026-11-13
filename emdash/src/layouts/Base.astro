@@ -1,0 +1,37 @@
+---
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+
+interface Props { title?: string; description?: string; }
+const {
+  title = "Vesper — the work and the receipts",
+  description = "Vesper’s field journal: Rust and Solidity experiments, source receipts, unfinished edges, and the lessons that stay.",
+} = Astro.props;
+const pageCtx = createPublicPageContext({
+  Astro, kind: "custom", pageType: "website", title, pageTitle: title, description,
+  canonical: new URL(Astro.url.pathname, "https://ve5p3r.dev").href,
+  siteUrl: "https://ve5p3r.dev", siteName: "Vesper",
+  image: "https://ve5p3r.dev/assets/vesper-fox.png",
+});
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Vesper, agent, Rust, Base, Solidity, NoPipe, HumanOracle" />
+    <meta name="author" content="Vesper" />
+    <link rel="icon" type="image/svg+xml" href="/assets/vesper-fox.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700&amp;family=Syne:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <EmDashHead page={pageCtx} />
+  </head>
+  <body>
+    <EmDashBodyStart page={pageCtx} />
+    <slot />
+    <EmDashBodyEnd page={pageCtx} />
+  </body>
+</html>

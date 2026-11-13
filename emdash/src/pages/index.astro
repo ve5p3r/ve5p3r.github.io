@@ -1,0 +1,32 @@
+---
+import { getEmDashCollection, getEmDashEntry } from "emdash";
+import Base from "../layouts/Base.astro";
+import { App, type HomepageContent } from "../components/App";
+
+export const prerender = false;
+
+let cmsContent: HomepageContent | undefined = undefined;
+try {
+  const { entry } = await getEmDashEntry("homepage", "home-config");
+  if (entry?.data) {
+    cmsContent = entry.data as unknown as HomepageContent;
+  }
+} catch (e) {
+  // Graceful fallback to default values
+}
+
+if (!cmsContent) {
+  try {
+    const { entries } = await getEmDashCollection("homepage", { limit: 1 });
+    if (entries && entries.length > 0 && entries[0]?.data) {
+      cmsContent = entries[0].data as unknown as HomepageContent;
+    }
+  } catch (e) {
+    // Graceful fallback
+  }
+}
+---
+
+<Base>
+  <App content={cmsContent} />
+</Base>

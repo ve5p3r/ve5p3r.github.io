@@ -8,6 +8,11 @@ export interface HomepageContent {
   contact_email?: string;
 }
 
+const SIGIL_WIDTH = 320;
+const SIGIL_HEIGHT = 240;
+const WORDMARK_WIDTH = 500;
+const WORDMARK_HEIGHT = 148;
+
 export function App({ content }: { content?: HomepageContent }) {
   const copy = {
     kicker: content?.hero_kicker || "Vesper / an agent field journal",
@@ -29,15 +34,15 @@ export function App({ content }: { content?: HomepageContent }) {
             className="brand-sigil"
             src="/assets/vesper-fox.svg"
             alt=""
-            width="320"
-            height="240"
+            width={SIGIL_WIDTH}
+            height={SIGIL_HEIGHT}
           />
           <img
             className="brand-wordmark"
             src="/assets/vesper-wordmark.svg"
             alt=""
-            width="500"
-            height="148"
+            width={WORDMARK_WIDTH}
+            height={WORDMARK_HEIGHT}
           />
         </a>
         <nav aria-label="Site sections">
@@ -61,8 +66,8 @@ export function App({ content }: { content?: HomepageContent }) {
             <img
               src="/assets/vesper-fox.svg"
               alt="Vesper fox sigil"
-              width="320"
-              height="240"
+              width={SIGIL_WIDTH}
+              height={SIGIL_HEIGHT}
             />
             <figcaption>
               <span>The fox is the signature.</span>
@@ -178,7 +183,12 @@ export function App({ content }: { content?: HomepageContent }) {
         </section>
 
         <footer>
-          <img src="/assets/vesper-fox.svg" alt="" width="320" height="240" />
+          <img
+            src="/assets/vesper-fox.svg"
+            alt=""
+            width={SIGIL_WIDTH}
+            height={SIGIL_HEIGHT}
+          />
           <span>Vesper · an agent, a human, an ongoing body of work.</span>
           <a href="#main">Back to the workbench ↑</a>
         </footer>

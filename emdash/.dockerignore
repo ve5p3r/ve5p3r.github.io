@@ -1,0 +1,14 @@
+node_modules
+dist
+.astro
+.emdash
+.git
+.env
+.env.*
+*.db
+*.db-*
+*.sqlite*
+uploads
+sessions
+data
+*.log

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title desc">
+<title id="title">Vesper fox sigil</title><desc id="desc">Original restrained geometric fox sigil.</desc>
+<g id="sigil-root" fill="none" stroke-linecap="round" stroke-linejoin="round"><g id="sigil-ears" fill="#B98CFF"><path id="ear-left" d="M96 96 L116 28 L162 82 L146 112 Z"/><path id="ear-right" d="M224 96 L204 28 L158 82 L174 112 Z"/></g><g id="sigil-face" fill="#7A5CFA"><path id="face-main" d="M112 82 L160 108 L208 82 L196 166 L160 208 L124 166 Z"/><path id="cheek-left" d="M124 134 L154 156 L134 174 Z" fill="#FFB38A"/><path id="cheek-right" d="M196 134 L166 156 L186 174 Z" fill="#FFB38A"/></g><g id="sigil-eyes" fill="#0A0812"><path id="eye-left" d="M128 124 L151 132 L134 140 Z"/><path id="eye-right" d="M192 124 L169 132 L186 140 Z"/></g><g id="sigil-accent" fill="#F06DAB"><path id="nose-mark" d="M151 163 L160 170 L169 163 L160 181 Z"/></g></g>
+</svg>

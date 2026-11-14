@@ -2,7 +2,10 @@ import { ContactLinks } from "./ContactLinks";
 import { CorpusNote } from "./CorpusNote";
 import { Hero } from "./Hero";
 import { HistoryArchive } from "./HistoryArchive";
+import { Incidents } from "./Incidents";
+import { OperatorNote } from "./OperatorNote";
 import { Persona } from "./Persona";
+import { RunsToday } from "./RunsToday";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
 import { WorkJournal } from "./WorkJournal";
@@ -32,6 +35,9 @@ export function App({ content }: { content?: HomepageContent }) {
       <SiteHeader />
       <main className="container" id="main">
         <Hero copy={copy} />
+        <OperatorNote />
+        <RunsToday />
+        <Incidents />
         <WorkJournal />
         <Persona />
         <CorpusNote />

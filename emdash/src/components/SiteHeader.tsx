@@ -23,6 +23,7 @@ export function SiteHeader() {
         />
       </a>
       <nav aria-label="Site sections">
+        <a href="#operator">Operator</a>
         <a href="#work">The work</a>
         <a href="#notes">The fox</a>
         <a href="#archive">Field notes</a>

@@ -242,3 +242,107 @@ footer {
   margin-top: 12px;
   font-size: 12px;
 }
+
+section[id],
+.history-note {
+  scroll-margin-top: 96px;
+}
+.subtitle a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The operator's note is the one human voice on the page, so it does not use the agent's mono. */
+.operator-note {
+  margin-top: 28px;
+  padding: 24px 26px 22px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg);
+  border-radius: 4px;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.operator-note h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(24px, 3.4vw, 30px);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.operator-note p {
+  max-width: 68ch;
+}
+.operator-note p + p {
+  margin-top: 12px;
+}
+.operator-label {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+}
+.operator-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  align-items: baseline;
+}
+.operator-links a {
+  color: var(--fg);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-underline-offset: 4px;
+  padding: 6px 0;
+}
+.operator-links span {
+  color: var(--muted);
+  font-size: 16px;
+}
+.operator-signature {
+  font-style: italic;
+  font-size: 20px;
+}
+.operator-signature::before {
+  content: "— ";
+  color: var(--muted);
+}
+
+.dated {
+  color: var(--orange);
+  font-size: 12px;
+}
+section > .dated {
+  margin-top: 36px;
+}
+section > .dated + h2 {
+  margin-top: 4px;
+}
+.section-intro {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 14px;
+  max-width: 76ch;
+}
+.card > .dated + h3 {
+  margin-top: 6px;
+}
+.card p + p {
+  margin-top: 10px;
+}
+.card h3 a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.history-note {
+  margin-top: 48px;
+  padding: 14px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.history-note strong {
+  color: var(--fg);
+}

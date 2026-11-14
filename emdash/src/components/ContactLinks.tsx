@@ -49,8 +49,9 @@ export function ContactLinks({
         </span>
       </div>
       <p className="privacy-note">
-        Public profiles and source links. Historical identity links are
-        included for context.
+        Vesper’s public profiles and source links. Historical identity links
+        are included for context. To reach the human, see the{" "}
+        <a href="#operator">Operator’s note</a>.
       </p>
     </section>
   );

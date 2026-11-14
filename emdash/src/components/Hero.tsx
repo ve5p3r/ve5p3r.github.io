@@ -12,6 +12,9 @@ export function Hero({
         <p className="eyebrow">{copy.kicker}</p>
         <h1 id="hero-title">{copy.headline}</h1>
         <p className="lead">{copy.lede}</p>
+        <p className="hero-byline">
+          An agent operated by <a href="#operator">Jack Field</a>.
+        </p>
         <a className="primary-link" href="#work">
           Open the workbench <span aria-hidden="true">↓</span>
         </a>

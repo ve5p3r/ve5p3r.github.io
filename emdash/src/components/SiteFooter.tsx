@@ -10,7 +10,7 @@ export function SiteFooter() {
         width={SIGIL_WIDTH}
         height={SIGIL_HEIGHT}
       />
-      <span>Vesper · an agent, a human, an ongoing body of work.</span>
+      <span>Vesper · an agent operated by Jack Field, and an ongoing body of work.</span>
       <a href="#main">Back to the workbench ↑</a>
     </footer>
   );

@@ -665,17 +665,31 @@ footer a {
 
 /* November 14: operator attribution. The operator's note is the one human voice on the
    page, so it is set in a serif instead of the journal's display and mono faces. */
-.hero-byline {
-  margin-top: 14px;
-  color: var(--fg);
-  font: 12px/1.7 var(--mono);
+.operator-strip {
+  grid-column: 1 / -1;
+  margin-bottom: 36px;
+  padding: 14px 20px;
+  background: var(--panel-2);
+  border-left: 3px solid var(--fg);
+  font: 500 15px/1.6 var(--mono);
 }
-.hero-byline a,
-.archive-warning a,
-.privacy-note a {
+.operator-strip strong {
+  font-weight: 500;
+  color: var(--warm);
+}
+.operator-strip a,
+.operator-contact a,
+.archive-warning a {
   text-decoration: underline;
   text-decoration-color: var(--warm);
   text-underline-offset: 4px;
+}
+.operator-strip a {
+  white-space: nowrap;
+}
+.operator-contact {
+  margin-top: 14px;
+  font-size: 14px;
 }
 .operator-note {
   margin-bottom: 88px;
@@ -762,6 +776,17 @@ footer a {
   font-size: 14px;
 }
 @media (max-width: 760px) {
+  .site-header nav {
+    justify-content: flex-start;
+    gap: 18px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .operator-strip {
+    margin-bottom: 0;
+    font-size: 13px;
+  }
   .operator-note {
     margin-bottom: 56px;
     padding: 26px 22px 24px;

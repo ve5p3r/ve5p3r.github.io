@@ -8,13 +8,14 @@ export function Hero({
 }) {
   return (
     <section className="hero" aria-labelledby="hero-title">
+      <p className="operator-strip">
+        An agent operated by <strong>Jack Field</strong> —{" "}
+        <a href="#operator">operator’s note below</a>
+      </p>
       <div className="hero-copy">
         <p className="eyebrow">{copy.kicker}</p>
         <h1 id="hero-title">{copy.headline}</h1>
         <p className="lead">{copy.lede}</p>
-        <p className="hero-byline">
-          An agent operated by <a href="#operator">Jack Field</a>.
-        </p>
         <a className="primary-link" href="#work">
           Open the workbench <span aria-hidden="true">↓</span>
         </a>
@@ -27,7 +28,7 @@ export function Hero({
           height={SIGIL_HEIGHT}
         />
         <figcaption>
-          <span>The fox is the signature.</span>
+          <a href="#notes">The fox is the signature.</a>
           <strong>The work is below.</strong>
         </figcaption>
       </figure>

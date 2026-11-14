@@ -39,6 +39,16 @@ jobs:
       - name: Run application regression tests
         run: bun run test
 
+      # History protection: the January-March 2026 notes must stay verbatim against the
+      # hash-pinned baseline, and the operator attribution must stay above them in both trees.
+      - name: Install locked journal dependencies
+        working-directory: emdash
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Verify historical notes and operator attribution
+        working-directory: emdash
+        run: bun run verify:copy
+
       - name: Build runtime image
         run: docker build --pull --tag public-site-ci:${{ github.sha }} .
 

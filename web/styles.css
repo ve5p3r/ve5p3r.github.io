@@ -1,4 +1,6 @@
 :root {
+  /* The nav is one non-wrapping row of this fixed height (plus a 1px rule) at every width. */
+  --nav-h: 56px;
   --bg: #0d0d0d;
   --fg: #e7e7e7;
   --muted: #a0a0a0;
@@ -47,8 +49,9 @@ a:hover {
 }
 .nav-inner {
   max-width: 1100px;
+  height: var(--nav-h);
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 0 20px;
   display: flex;
   gap: 16px;
   align-items: center;
@@ -62,7 +65,16 @@ a:hover {
 .nav-right {
   display: flex;
   gap: 16px;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.nav-right::-webkit-scrollbar {
+  display: none;
+}
+.nav-right a {
+  line-height: var(--nav-h);
 }
 .status-dot {
   width: 8px;
@@ -227,7 +239,7 @@ footer {
     grid-template-columns: 1fr;
   }
   .nav-right {
-    gap: 10px;
+    gap: 14px;
   }
 }
 
@@ -243,14 +255,25 @@ footer {
   font-size: 12px;
 }
 
-section[id],
-.history-note {
-  scroll-margin-top: 96px;
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
 }
-.subtitle a {
+
+.operator-strip {
+  grid-column: 1 / -1;
+  padding: 12px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg);
+  border-radius: 4px;
   color: var(--fg);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-size: 16px;
+}
+.operator-strip strong {
+  font-weight: 700;
+}
+.operator-strip a {
+  white-space: nowrap;
 }
 
 /* The operator's note is the one human voice on the page, so it does not use the agent's mono. */
@@ -325,18 +348,22 @@ section > .dated + h2 {
   margin-bottom: 14px;
   max-width: 76ch;
 }
-.card > .dated + h3 {
+/* Scoped to the November 2026 sections so the older notes' cards keep their spacing. */
+#today .card > .dated + h3,
+#incidents .card > .dated + h3,
+#source .card > .dated + h3 {
   margin-top: 6px;
 }
-.card p + p {
+#today .card p + p,
+#incidents .card p + p,
+#source .card p + p {
   margin-top: 10px;
 }
-.card h3 a {
+#source .card a {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 .history-note {
-  margin-top: 48px;
   padding: 14px 16px;
   border: 1px dashed var(--border);
   border-radius: 8px;
@@ -345,4 +372,27 @@ section > .dated + h2 {
 }
 .history-note strong {
   color: var(--fg);
+}
+.history-disclosure {
+  margin-top: 14px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.history-disclosure[open] {
+  padding-bottom: 20px;
+}
+.history-disclosure > summary {
+  padding: 14px 0;
+  color: var(--orange);
+  font-size: 14px;
+  cursor: pointer;
+}
+.operator-contact {
+  margin-top: 12px;
+  font-size: 13px;
+}
+.operator-contact a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

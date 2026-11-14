@@ -7,6 +7,9 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { App } from "../src/components/App";
 
+// HISTORY PIN (2 of 2; ../../scripts/smoke.ts pins the same two hashes independently and
+// runs in CI, as does this script). Changing the constants in both files in one change is a
+// deliberate history refresh and needs the owner's review.
 // The historical baseline is PINNED. It is a byte-for-byte copy of web/main.tsx at commit
 // d2f0b06 (the page as published before the November 14, 2026 operator attribution), vendored
 // so "history" cannot drift when the live page changes. Both the file bytes and the rendered
@@ -92,11 +95,21 @@ assert.equal(
   archiveText(original),
   "Published page keeps the earlier field notes verbatim, in source order",
 );
-assert.deepEqual(
-  contactLinks(live),
-  contactLinks(original),
-  "Published page keeps the original external/contact destinations",
-);
+// Approved additions to the contact region. The original destinations must stay, unchanged
+// and in their original order; anything beyond them must be listed here, exactly once each,
+// after the originals. Any other new link in the contact section or footer fails.
+// 2026-11-14: the operator asked for a route to him in the contact section (owner-approved).
+const APPROVED_CONTACT_ADDITIONS = [
+  "https://jdot.dev",
+  "mailto:connect@jdot.dev",
+];
+const assertContactLinks = (name: string, page: string) =>
+  assert.deepEqual(
+    contactLinks(page),
+    [...contactLinks(original), ...APPROVED_CONTACT_ADDITIONS],
+    `${name}: original contact destinations preserved, plus only the approved additions`,
+  );
+assertContactLinks("published page", live);
 assert.equal(
   archiveText(candidate),
   archiveText(original),
@@ -107,11 +120,7 @@ assert.equal(
   text(candidate),
   "Published starter copy and fallback agree",
 );
-assert.deepEqual(
-  contactLinks(candidate),
-  contactLinks(original),
-  "Existing external/contact destinations are preserved",
-);
+assertContactLinks("journal", candidate);
 assert.deepEqual(
   links(seeded),
   links(candidate),
@@ -170,10 +179,66 @@ const sectionHtml = (html: string, id: string) => {
   assert.ok(start >= 0, `Section present: ${id}`);
   return html.slice(start, html.indexOf("</section>", start));
 };
-for (const [name, page, archiveMarker] of [
-  ["journal", candidate, 'id="archive"'],
-  ["published page", live, '<section id="story">'],
+const claims = (html: string) =>
+  Array.from(
+    html.matchAll(/<p class="[^"]*\bartifact-claim\b[^"]*">(.*?)<\/p>/gs),
+    (match) => text(match[1]),
+  );
+for (const [name, page, archiveMarker, codeId] of [
+  ["journal", candidate, 'id="archive"', "work"],
+  ["published page", live, 'id="history"', "source"],
 ] as const) {
+  // Both trees keep the old notes in a closed disclosure, qualified before the notes start.
+  assert.ok(
+    page.includes('class="history-disclosure"') &&
+      !page.includes('class="history-disclosure" open'),
+    `${name}: historical notes are collapsed by default`,
+  );
+  const storyAt = page.indexOf('<section id="story">');
+  const disclosureAt = page.indexOf('class="history-disclosure"');
+  assert.ok(
+    disclosureAt < storyAt &&
+      page.indexOf("</details>", storyAt) < page.indexOf('<section id="contact">') &&
+      page.indexOf("</details>", page.indexOf('<section id="ecosystem">')) > 0,
+    `${name}: historical notes sit wholly inside the disclosure`,
+  );
+  assert.ok(
+    page.indexOf("have not been reverified as current facts") < storyAt &&
+      page.indexOf("have not been reverified as current facts") > 0,
+    `${name}: historical claims are qualified before the notes`,
+  );
+  const navHtml = page.slice(page.indexOf("<nav"), page.indexOf("</nav>"));
+  for (const id of ["story", "infra", "projects", "timeline", "ecosystem"])
+    assert.ok(
+      !navHtml.includes(`href="#${id}"`),
+      `${name}: nav does not jump past the qualification into #${id}`,
+    );
+  for (const id of ["operator", "today", "incidents", codeId, "contact"])
+    assert.ok(navHtml.includes(`href="#${id}"`), `${name}: nav links #${id}`);
+  assert.ok(
+    Array.from(navHtml.matchAll(/<a\b/g)).length <= 6,
+    `${name}: nav has at most six items`,
+  );
+  const heroAt = page.indexOf('class="hero"');
+  const strip = page.indexOf('class="operator-strip"');
+  assert.ok(
+    strip > heroAt &&
+      strip < sectionStart(page, "operator") &&
+      text(page.slice(strip, sectionStart(page, "operator"))).includes(
+        "An agent operated by Jack Field — operator’s note below",
+      ),
+    `${name}: the hero names the operator`,
+  );
+  assert.ok(
+    sectionStart(page, codeId) > sectionStart(page, "incidents") &&
+      sectionStart(page, codeId) < page.indexOf(archiveMarker),
+    `${name}: public source cards sit above the archive`,
+  );
+  for (const href of [
+    "https://github.com/ve5p3r/nopipe/blob/7114e09f2bafb2d45e6f8a3ac9a7346a5e1f702c/cluster/src/rpc_server.rs",
+    "https://github.com/ve5p3r/human-oracle/blob/4667f4bbec439fda8898765f22c6b6de0427c3d5/docs/WHITEPAPER.md",
+  ])
+    assert.ok(links(page).includes(href), `${name}: pinned source receipt ${href}`);
   const archiveAt = page.indexOf(archiveMarker);
   assert.ok(archiveAt > 0, `${name}: archive marker`);
   let previous = page.indexOf('class="hero"');
@@ -208,7 +273,6 @@ for (const [name, page, archiveMarker] of [
     "Dated November 14, 2026",
     "What runs today",
     "LiteLLM",
-    "vLLM",
     "Authentik",
     "Plane",
     "ZeroClaw",
@@ -243,6 +307,12 @@ for (const id of ["operator", "today", "incidents"])
     text(sectionHtml(live, id)),
     `Journal and published page agree on #${id}`,
   );
+assert.ok(claims(live).length >= 5, "Public source cards carry their claims");
+assert.deepEqual(
+  claims(candidate),
+  claims(live),
+  "Journal and published page agree on the NoPipe and HumanOracle claims",
+);
 // October 9: authorized field-journal iteration. Original artwork stays byte-identical;
 // earlier notes remain in the historical archive, while new copy cites inspected source.
 const assetPairs = [["public/fox.webp", "public/assets/fox.webp"]];
@@ -288,9 +358,10 @@ console.log(
         "pinned baseline bytes and archive text hash",
         "historical archive parity (journal and published page)",
         "operator note, dated record and incident summaries above the archive",
-        "journal/published-page agreement on new sections",
+        "journal/published-page agreement on new sections and source claims",
+        "collapsed notes, nav and hero attribution in both trees",
+        "contact destinations plus approved additions only",
         "seed/fallback parity",
-        "contact destinations",
         "retained sections",
         "source links",
         "historical qualification",

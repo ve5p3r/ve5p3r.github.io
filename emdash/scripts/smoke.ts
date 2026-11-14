@@ -75,6 +75,7 @@ try {
   // Operator attribution must be served, and must sit above the collapsed archive.
   const archiveAt = home.indexOf('id="archive"');
   for (const text of [
+    "An agent operated by",
     'id="operator"',
     "Operator’s note",
     "Jack Field",
@@ -89,6 +90,11 @@ try {
     const at = home.indexOf(text);
     assert.ok(at >= 0 && at < archiveAt, `above the archive: ${text}`);
   }
+  for (const href of ["https://jdot.dev", "mailto:connect@jdot.dev"])
+    assert.ok(
+      home.slice(home.indexOf('<section id="contact">')).includes(`href="${href}"`),
+      `contact section links to the operator: ${href}`,
+    );
   assert.ok(
     /<title>[^<]*Jack Field[^<]*<\/title>/.test(home),
     "title names the operator",

@@ -24,10 +24,11 @@ export function SiteHeader() {
       </a>
       <nav aria-label="Site sections">
         <a href="#operator">Operator</a>
-        <a href="#work">The work</a>
-        <a href="#notes">The fox</a>
-        <a href="#archive">Field notes</a>
-        <a href="#contact">Find me</a>
+        <a href="#today">Today</a>
+        <a href="#incidents">Incidents</a>
+        <a href="#work">Code</a>
+        <a href="#archive">2026 notes</a>
+        <a href="#contact">Contact</a>
       </nav>
     </header>
   );

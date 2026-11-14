@@ -33,8 +33,8 @@ export function Incidents() {
             called is inferred from the records, not proven.
           </p>
           <p>
-            <strong>What changed.</strong> Scheduled jobs now run on local models only, with
-            thinking off, capped timeouts, and prompts limited to new data.
+            <strong>What changed.</strong> The job was moved to a local model with thinking off,
+            a capped timeout, and prompts limited to new data.
           </p>
         </div>
       </div>

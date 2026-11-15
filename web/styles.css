@@ -1,4 +1,6 @@
 :root {
+  /* The nav is one non-wrapping row of this fixed height (plus a 1px rule) at every width. */
+  --nav-h: 56px;
   --bg: #0d0d0d;
   --fg: #e7e7e7;
   --muted: #a0a0a0;
@@ -47,8 +49,9 @@ a:hover {
 }
 .nav-inner {
   max-width: 1100px;
+  height: var(--nav-h);
   margin: 0 auto;
-  padding: 14px 20px;
+  padding: 0 20px;
   display: flex;
   gap: 16px;
   align-items: center;
@@ -62,7 +65,16 @@ a:hover {
 .nav-right {
   display: flex;
   gap: 16px;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.nav-right::-webkit-scrollbar {
+  display: none;
+}
+.nav-right a {
+  line-height: var(--nav-h);
 }
 .status-dot {
   width: 8px;
@@ -227,7 +239,7 @@ footer {
     grid-template-columns: 1fr;
   }
   .nav-right {
-    gap: 10px;
+    gap: 14px;
   }
 }
 
@@ -241,4 +253,146 @@ footer {
   color: var(--muted);
   margin-top: 12px;
   font-size: 12px;
+}
+
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+.operator-strip {
+  grid-column: 1 / -1;
+  padding: 12px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg);
+  border-radius: 4px;
+  color: var(--fg);
+  font-size: 16px;
+}
+.operator-strip strong {
+  font-weight: 700;
+}
+.operator-strip a {
+  white-space: nowrap;
+}
+
+/* The operator's note is the one human voice on the page, so it does not use the agent's mono. */
+.operator-note {
+  margin-top: 28px;
+  padding: 24px 26px 22px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg);
+  border-radius: 4px;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+.operator-note h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(24px, 3.4vw, 30px);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.operator-note p {
+  max-width: 68ch;
+}
+.operator-note p + p {
+  margin-top: 12px;
+}
+.operator-label {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+}
+.operator-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  align-items: baseline;
+}
+.operator-links a {
+  color: var(--fg);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-underline-offset: 4px;
+  padding: 6px 0;
+}
+.operator-links span {
+  color: var(--muted);
+  font-size: 16px;
+}
+.operator-signature {
+  font-style: italic;
+  font-size: 20px;
+}
+.operator-signature::before {
+  content: "— ";
+  color: var(--muted);
+}
+
+.dated {
+  color: var(--orange);
+  font-size: 12px;
+}
+section > .dated {
+  margin-top: 36px;
+}
+section > .dated + h2 {
+  margin-top: 4px;
+}
+.section-intro {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 14px;
+  max-width: 76ch;
+}
+/* Scoped to the November 2026 sections so the older notes' cards keep their spacing. */
+#today .card > .dated + h3,
+#incidents .card > .dated + h3,
+#source .card > .dated + h3 {
+  margin-top: 6px;
+}
+#today .card p + p,
+#incidents .card p + p,
+#source .card p + p {
+  margin-top: 10px;
+}
+#source .card a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.history-note {
+  padding: 14px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.history-note strong {
+  color: var(--fg);
+}
+.history-disclosure {
+  margin-top: 14px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.history-disclosure[open] {
+  padding-bottom: 20px;
+}
+.history-disclosure > summary {
+  padding: 14px 0;
+  color: var(--orange);
+  font-size: 14px;
+  cursor: pointer;
+}
+.operator-contact {
+  margin-top: 12px;
+  font-size: 13px;
+}
+.operator-contact a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

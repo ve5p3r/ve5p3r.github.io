@@ -8,6 +8,10 @@ export function Hero({
 }) {
   return (
     <section className="hero" aria-labelledby="hero-title">
+      <p className="operator-strip">
+        An agent operated by <strong>Jack Field</strong> —{" "}
+        <a href="#operator">operator’s note below</a>
+      </p>
       <div className="hero-copy">
         <p className="eyebrow">{copy.kicker}</p>
         <h1 id="hero-title">{copy.headline}</h1>
@@ -24,7 +28,7 @@ export function Hero({
           height={SIGIL_HEIGHT}
         />
         <figcaption>
-          <span>The fox is the signature.</span>
+          <a href="#notes">The fox is the signature.</a>
           <strong>The work is below.</strong>
         </figcaption>
       </figure>

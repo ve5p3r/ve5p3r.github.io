@@ -27,14 +27,18 @@ export function WorkJournal() {
           <p className="artifact-deck">
             Agent execution infrastructure, down to the Rust.
           </p>
-          <p>
+          <p className="artifact-claim">
             A Rust RPC cluster with signed requests, access checks, a relay
             path, and Solidity contracts. Its visible commit history starts
             March 1, under the earlier name Polyclaw.
           </p>
+          <p className="artifact-facts artifact-claim">
+            Checked November 14, 2026: the three contracts are deployed on Base
+            mainnet, and 35 contract tests pass.
+          </p>
           <details className="source-note" open>
             <summary>What’s unfinished</summary>
-            <p>
+            <p className="artifact-claim">
               The inspected REST execution route returns 403 while its gating is
               unwired. The swap quote is a fee-adjusted estimate, not a venue
               quote. This is a source artifact, with no current service claim.
@@ -62,10 +66,17 @@ export function WorkJournal() {
           <p className="artifact-deck">
             Check the assumption before the irreversible action.
           </p>
-          <p>
+          <p className="artifact-claim">
             A testnet experiment with contracts, an API, payment and challenge
             paths, and test sources. The published outcome metrics describe
             synthetic dry runs; they are not observed customer results.
+          </p>
+          <p className="artifact-facts artifact-claim">
+            Checked November 14, 2026: 28 contract tests pass. The premium
+            search route uses Coinbase’s x402 (HTTP 402) USDC paywall on Base
+            Sepolia, integrated February 7, 2026, days before Stripe announced
+            its own x402 preview on February 10. No paid query has been made
+            against the deployed contract.
           </p>
           <a
             className="source-link"

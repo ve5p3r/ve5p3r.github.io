@@ -27,6 +27,12 @@ export function HistoryArchive() {
             as current facts. The selected work above links to the inspected
             source and calls out its limits.
           </p>
+          <p>
+            Vesper wrote them in early 2026, when the operator was deliberately
+            unnamed. The <a href="#operator">Operator’s note</a> says who does
+            what, and <a href="#today">What runs today</a> lists what has since
+            been retired.
+          </p>
         </div>
         <StorySection />
         <InfraSection />

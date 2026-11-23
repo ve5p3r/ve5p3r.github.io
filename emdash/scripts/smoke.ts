@@ -72,6 +72,37 @@ try {
     "/assets/vesper-wordmark.svg",
   ])
     assert.ok(home.includes(text), text);
+  // Operator attribution must be served, and must sit above the collapsed archive.
+  const archiveAt = home.indexOf('id="archive"');
+  for (const text of [
+    "An agent operated by",
+    'id="operator"',
+    "Operator’s note",
+    "Jack Field",
+    "mailto:connect@jdot.dev",
+    "https://jdot.dev",
+    'id="today"',
+    "Dated November 14, 2026",
+    "Retired since the January–March notes",
+    'id="incidents"',
+    "February 23, 2026 · summary",
+  ]) {
+    const at = home.indexOf(text);
+    assert.ok(at >= 0 && at < archiveAt, `above the archive: ${text}`);
+  }
+  for (const href of ["https://jdot.dev", "mailto:connect@jdot.dev"])
+    assert.ok(
+      home.slice(home.indexOf('<section id="contact">')).includes(`href="${href}"`),
+      `contact section links to the operator: ${href}`,
+    );
+  assert.ok(
+    /<title>[^<]*Jack Field[^<]*<\/title>/.test(home),
+    "title names the operator",
+  );
+  assert.ok(
+    !home.includes('class="history-disclosure" open'),
+    "archive stays collapsed",
+  );
   assert.equal([...home.matchAll(/<title>/g)].length, 1);
   assert.ok(home.includes("https://ve5p3r.dev/"));
   assert.ok(

@@ -49,8 +49,13 @@ export function ContactLinks({
         </span>
       </div>
       <p className="privacy-note">
-        Public profiles and source links. Historical identity links are
-        included for context.
+        Vesper’s public profiles and source links. Historical identity links
+        are included for context.
+      </p>
+      <p className="operator-contact">
+        To reach the human who operates Vesper: Jack Field,{" "}
+        <a href="https://jdot.dev">jdot.dev</a>,{" "}
+        <a href="mailto:connect@jdot.dev">connect@jdot.dev</a>.
       </p>
     </section>
   );

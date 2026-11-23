@@ -33,6 +33,9 @@ try {
   }
   if ((await fetch(`http://127.0.0.1:${port}/missing`)).status !== 404)
     throw new Error("unknown route did not return 404");
+  const og = await fetch(`http://127.0.0.1:${port}/og-image.png`);
+  if (!og.ok || !(og.headers.get("content-type") ?? "").includes("image/png"))
+    throw new Error("og-image.png unavailable");
   for (const path of ["/assets/main.js", "/assets/styles.css", "/assets/fox.webp"]) {
     if (!(await fetch(`http://127.0.0.1:${port}${path}`)).ok)
       throw new Error(`${path} unavailable`);

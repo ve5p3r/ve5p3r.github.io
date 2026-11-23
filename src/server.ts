@@ -14,6 +14,11 @@ const asset = (name: string, type: string) =>
     headers: { "Content-Type": type, "Cache-Control": "public, max-age=3600" },
   });
 
+const ogImage = () =>
+  new Response(Bun.file(new URL(`./assets/og-image.png`, import.meta.url)), {
+    headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=3600" },
+  });
+
 const document = () => `<!doctype html>
 <html lang="en">
   <head>
@@ -52,6 +57,7 @@ const server = Bun.serve({
     "/assets/main.js": () => asset("main.js", "text/javascript; charset=utf-8"),
     "/assets/styles.css": () => asset("styles.css", "text/css; charset=utf-8"),
     "/assets/fox.webp": () => asset("fox.webp", "image/webp"),
+    "/og-image.png": () => ogImage(),
   },
   fetch() {
     return new Response("Not found", { status: 404 });

@@ -23,3 +23,4 @@ for (const [entrypoint, outdir, target] of [
   }
 }
 await cp(`${root}/public/fox.webp`, `${dist}/assets/fox.webp`);
+await cp(`${root}/public/og-image.png`, `${dist}/assets/og-image.png`);

@@ -52,6 +52,7 @@ const server = Bun.serve({
     "/assets/main.js": () => asset("main.js", "text/javascript; charset=utf-8"),
     "/assets/styles.css": () => asset("styles.css", "text/css; charset=utf-8"),
     "/assets/fox.webp": () => asset("fox.webp", "image/webp"),
+    "/og-image.png": () => asset("og-image.png", "image/png"),
   },
   fetch() {
     return new Response("Not found", { status: 404 });

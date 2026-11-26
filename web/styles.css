@@ -255,8 +255,9 @@ footer {
     padding: 10px 12px 8px;
   }
   .nav-left {
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 9px;
   }
   .nav-right {
     flex-direction: row;
